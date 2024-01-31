@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() {
+    int l= 1;
+    int u= 100;
+    int maxAttempts = 10;
+    int rounds = 0;
+    int score = 0;
+
+    srand(time(NULL));
+
+    do {
+        int targetNumber = rand() % (u- l + 1) + l;
+        int userGuess, attempts = 0;
+
+        printf("\nWelcome to Guess the Number Game!\n");
+        printf("Try to guess the number between %d and %d.\n", l, u);
+
+        while (attempts < maxAttempts) {
+            printf("Enter your guess (Attempt %d): ", attempts + 1);
+            scanf("%d", &userGuess);
+            attempts++;
+
+            if (userGuess == targetNumber) {
+                printf("Congratulations! You guessed the correct number %d in %d attempts.\n", targetNumber, attempts);
+                score++;
+                break;
+            } else if (userGuess < targetNumber) {
+                printf("Too low. ");
+            } else {
+                printf("Too high. ");
+            }
+
+            printf("Try again.\n");
+        }
+
+        if (attempts == maxAttempts) {
+            printf("Sorry, you've reached the maximum number of attempts. The correct number was %d.\n", targetNumber);
+        }
+
+        printf("Your current score: %d\n", score);
+
+        printf("\nDo you want to play again? (1 for Yes, 0 for No): ");
+        scanf("%d", &rounds);
+
+    } while (rounds);
+
+    printf("\nThanks for playing! Your final score: %d\n", score);
+
+    return 0;
+}
