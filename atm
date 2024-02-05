@@ -1,0 +1,85 @@
+#include <stdio.h>
+
+// Structure to represent a bank account
+struct BankAccount {
+    float balance;
+};
+
+// Function prototypes
+void initializeAccount(struct BankAccount *account);
+void deposit(struct BankAccount *account, float amount);
+void withdraw(struct BankAccount *account, float amount);
+void displayBalance(const struct BankAccount *account);
+
+int main() {
+    struct BankAccount userAccount;
+    initializeAccount(&userAccount);
+
+    while (1) {
+        printf("\nATM Simulator\n");
+        printf("1. Deposit\n");
+        printf("2. Withdraw\n");
+        printf("3. Check Balance\n");
+        printf("0. Exit\n");
+
+        int choice;
+        printf("Enter your choice (0-3): ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 0:
+                printf("Thank you for using the ATM. Exiting...\n");
+                return 0;
+            case 1:
+                printf("Enter the amount to deposit: ");
+                float depositAmount;
+                scanf("%f", &depositAmount);
+                deposit(&userAccount, depositAmount);
+                break;
+            case 2:
+                printf("Enter the amount to withdraw: ");
+                float withdrawAmount;
+                scanf("%f", &withdrawAmount);
+                withdraw(&userAccount, withdrawAmount);
+                break;
+            case 3:
+                displayBalance(&userAccount);
+                break;
+            default:
+                printf("Invalid choice. Please enter a number between 0 and 3.\n");
+        }
+    }
+
+    return 0;
+}
+
+void initializeAccount(struct BankAccount *account) {
+    printf("Enter the initial balance: ");
+    scanf("%f", &account->balance);
+}
+
+void deposit(struct BankAccount *account, float amount) {
+    if (amount > 0) {
+        account->balance += amount;
+        printf("Deposit successful");
+    } else {
+        printf("Invalid deposit amount. Please enter a positive value.\n");
+    }
+}
+
+void withdraw(struct BankAccount *account, float amount) {
+    if (amount > 0) {
+        if (amount <= account->balance) {
+            account->balance -= amount;
+            printf("Withdrawal successful.");
+        } else {
+            printf("Insufficient funds. Cannot withdraw more than the available balance.\n");
+        }
+    } else {
+        printf("Invalid withdrawal amount. Please enter a positive value.\n");
+    }
+}
+
+void displayBalance(const struct BankAccount *account) {
+    printf("Current balance: $%.2f\n", account->balance);
+}
