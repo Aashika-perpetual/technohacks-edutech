@@ -1,0 +1,65 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+struct Game {
+    char userChoice;
+    char computerChoice;
+};
+
+char getUserChoice() {
+    char choice;
+    printf("Enter your choice (r:rock, p:paper, s:scissors): ");
+    scanf(" %c", &choice);
+    return choice;
+}
+
+char getComputerChoice() {
+    srand(time(NULL));
+    int randomNumber = rand() % 3;
+    switch(randomNumber) {
+        case 0:
+            return 'r'; // rock
+        case 1:
+            return 'p'; // paper
+        case 2:
+            return 's'; // scissors
+    }
+}
+
+char determineWinner(char userChoice, char computerChoice) {
+    if (userChoice == computerChoice)
+        return 'T'; // Tie
+    else if ((userChoice == 'r' && computerChoice == 's') ||
+             (userChoice == 'p' && computerChoice == 'r') ||
+             (userChoice == 's' && computerChoice == 'p'))
+        return 'U'; // User wins
+    else
+        return 'C'; // Computer wins
+}
+
+int main() {
+    printf("Welcome to Rock-Paper-Scissors!\n");
+    char playAgain = 'y';
+    while (playAgain == 'y') {
+        struct Game game;
+        game.userChoice = getUserChoice();
+        game.computerChoice = getComputerChoice();
+        
+        printf("You chose: %c\n", game.userChoice);
+        printf("Computer chose: %c\n", game.computerChoice);
+        
+        char result = determineWinner(game.userChoice, game.computerChoice);
+        if (result == 'T')
+            printf("It's a tie!\n");
+        else if (result == 'U')
+            printf("You win!\n");
+        else
+            printf("Computer wins!\n");
+        
+        printf("Do you want to play again? (y/n): ");
+        scanf(" %c", &playAgain);
+    }
+    printf("Thanks for playing!\n");
+    return 0;
+}
