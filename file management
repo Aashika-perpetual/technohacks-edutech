@@ -1,0 +1,194 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+void createFile(char *fileName) {
+    FILE *file = fopen(fileName, "w");
+    if (file == NULL) {
+        printf("Error creating file.\n");
+        return;
+    }
+    fclose(file);
+    printf("File '%s' created successfully.\n", fileName);
+}
+
+void deleteFile(char *fileName)
+{
+    if (remove(fileName) == 0)
+        printf("File '%s' deleted successfully.\n", fileName);
+    else
+        printf("Error deleting file '%s'.\n", fileName);
+}
+
+void copyFile(char *source, char *destination) {
+    FILE *src, *dest;
+    char ch;
+    src = fopen(source, "r");
+    if (src == NULL) 
+    {
+        printf("Error opening source file.\n");
+        return;
+    }
+    dest = fopen(destination, "w");
+    if (dest == NULL)
+   {
+        printf("Error creating destination file.\n");
+        fclose(src);
+        return;
+    }
+    while ((ch = fgetc(src)) != EOF)
+        fputc(ch, dest);
+    fclose(src);
+    fclose(dest);
+    printf("File '%s' copied to '%s' successfully.\n", source, destination);
+}
+
+void moveFile(char *source, char *destination)
+{
+    if (rename(source, destination) == 0)
+        printf("File '%s' moved to '%s' successfully.\n", source, destination);
+    else
+        printf("Error moving file '%s' to '%s'.\n", source, destination);
+}
+
+void createDirectory(char *dirName)
+{
+    if (mkdir(dirName, 0777) == 0)
+        printf("Directory '%s' created successfully.\n", dirName);
+    else
+        printf("Error creating directory '%s'.\n", dirName);
+}
+
+void deleteDirectory(char *dirName)
+{
+    if (rmdir(dirName) == 0)
+        printf("Directory '%s' deleted successfully.\n", dirName);
+    else
+        printf("Error deleting directory '%s'.\n", dirName);
+}
+
+void copyDirectory(char *sourceDir, char *destinationDir)
+{
+    DIR *dir;
+    struct dirent *entry;
+    struct stat statbuf;
+    char sourcePath[PATH_MAX];
+    char destinationPath[PATH_MAX];
+
+    dir = opendir(sourceDir);
+    if (dir == NULL)
+    {
+        printf("Error opening source directory.\n");
+        return;
+    }
+    createDirectory(destinationDir); 
+    while ((entry = readdir(dir)) != NULL)
+    {
+        snprintf(sourcePath, sizeof(sourcePath), "%s/%s", sourceDir, entry->d_name);
+        snprintf(destinationPath, sizeof(destinationPath), "%s/%s", destinationDir, entry->d_name);
+        if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+            continue;
+        if (lstat(sourcePath, &statbuf) == -1) 
+        {
+            printf("Error getting file status.\n");
+            continue;
+        }
+        if (S_ISDIR(statbuf.st_mode)) 
+        {
+            copyDirectory(sourcePath, destinationPath);
+        } else
+        {
+            copyFile(sourcePath, destinationPath);
+        }
+    }
+
+    closedir(dir);
+}
+
+void moveDirectory(char *sourceDir, char *destinationDir)
+{
+    if (rename(sourceDir, destinationDir) == 0)
+        printf("Directory '%s' moved to '%s' successfully.\n", sourceDir, destinationDir);
+    else
+        printf("Error moving directory '%s' to '%s'.\n", sourceDir, destinationDir);
+}
+
+int main() 
+{
+    char option;
+    char fileName[100], sourceFile[100], destinationFile[100], dirName[100], sourceDir[100], destinationDir[100];
+    while (1) {
+        printf("\nMenu:\n");
+        printf("1. Create a file\n");
+        printf("2. Delete a file\n");
+        printf("3. Copy a file\n");
+        printf("4. Move a file\n");
+        printf("5. Create a directory\n");
+        printf("6. Delete a directory\n");
+        printf("7. Copy a directory\n");
+        printf("8. Move a directory\n");
+        printf("9. Exit\n");
+        printf("Enter your choice: ");
+        scanf(" %c", &option);
+
+        switch (option) {
+            case '1':
+                printf("Enter file name to create: ");
+                scanf("%s", fileName);
+                createFile(fileName);
+                break;
+            case '2':
+                printf("Enter file name to delete: ");
+                scanf("%s", fileName);
+                deleteFile(fileName);
+                break;
+            case '3':
+                printf("Enter source file name: ");
+                scanf("%s", sourceFile);
+                printf("Enter destination file name: ");
+                scanf("%s", destinationFile);
+                copyFile(sourceFile, destinationFile);
+                break;
+            case '4':
+                printf("Enter source file name: ");
+                scanf("%s", sourceFile);
+                printf("Enter destination file name: ");
+                scanf("%s", destinationFile);
+                moveFile(sourceFile, destinationFile);
+                break;
+            case '5':
+                printf("Enter directory name to create: ");
+                scanf("%s", dirName);
+                createDirectory(dirName);
+                break;
+            case '6':
+                printf("Enter directory name to delete: ");
+                scanf("%s", dirName);
+                deleteDirectory(dirName);
+                break;
+            case '7':
+                printf("Enter source directory name: ");
+                scanf("%s", sourceDir);
+                printf("Enter destination directory name: ");
+                scanf("%s", destinationDir);
+                copyDirectory(sourceDir, destinationDir);
+                break;
+            case '8':
+                printf("Enter source directory name: ");
+                scanf("%s", sourceDir);
+                printf("Enter destination directory name: ");
+                scanf("%s", destinationDir);
+                moveDirectory(sourceDir, destinationDir);
+                break;
+            case '9':
+                printf("Exiting program.\n");
+                exit(0);
+            default:
+                printf("Invalid option.\n");
+        }
+    }
+    return 0;
+}
